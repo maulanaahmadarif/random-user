@@ -59,14 +59,6 @@ export default {
     Card
   },
   methods: {
-    onScrollContainer(e) {
-      if (this.page <= 9) {
-        if (e.target.scrollLeft > (this.page * (350 * 6))) {
-          this.page++
-          this.setUserData(this.page)
-        }
-      }
-    },
     setUsersLocalData(page, users = []) {
       window.localStorage.setItem('page', page)
       window.localStorage.setItem('users', JSON.stringify(users))
@@ -87,6 +79,21 @@ export default {
         }
       }
     },
+    onScrollContainer(e) {
+      if (this.page <= 9) {
+        if (e.target.scrollLeft > (this.page * (350 * 6))) {
+          this.page++
+          this.setUserData(this.page)
+        }
+      }
+    },
+    onWindowResize() {
+      if (window.innerWidth < 768) {
+        window.addEventListener('scroll', _debounce(this.onScrollWindow, 100))
+      } else {
+        this.$refs.slideContainer.addEventListener('scroll', _debounce(this.onScrollContainer, 100))
+      }
+    },
     setUserData(page) {
       this.isFetching = true
       client.get(`/?results=${this.limit}&page=${page}`)
@@ -104,6 +111,9 @@ export default {
     sortByCity() {
       this.users.sort((a, b) => (a.location.city > b.location.city) ? 1 : -1)
     }
+  },
+  created() {
+    window.addEventListener('resize', this.onWindowResize);
   },
   mounted() {
     const { users, page } = this.getUsersLocalData()

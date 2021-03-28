@@ -1,4 +1,4 @@
-# qoala-test
+# Random User
 
 ## Project setup
 ```
